@@ -7,12 +7,19 @@ from pathlib import Path
 import ffmpeg
 
 class SubtitleGenerator:
-    def __init__(self, openai_api_key=None):
+    def __init__(self, openai_api_key=None, source_language=None, target_language=None):
         self.whisper_model = None
+        
+        # 언어 설정 (환경변수에서 기본값 읽기)
+        self.source_language = source_language or os.getenv('SOURCE_LANGUAGE', 'ja')
+        self.target_language = target_language or os.getenv('TARGET_LANGUAGE', 'Korean')
+        
         if openai_api_key:
             openai.api_key = openai_api_key
         else:
             print("⚠️  OpenAI API 키가 없어 번역 기능이 제한됩니다.")
+        
+        print(f"🌐 언어 설정: {self.source_language} → {self.target_language}")
     
     def load_whisper_model(self, model_size="large"):
         """Whisper 모델 로드"""

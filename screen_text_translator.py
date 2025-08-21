@@ -10,12 +10,20 @@ import json
 import time
 
 class ScreenTextTranslator:
-    def __init__(self, openai_api_key=None):
+    def __init__(self, openai_api_key=None, source_language=None, target_language=None, ocr_languages=None):
         print("🔧 OCR 및 번역 시스템 초기화 중...")
         
-        # OCR 초기화 (일본어 + 영어)
-        self.ocr_reader = easyocr.Reader(['ja', 'en'])
-        print("✅ EasyOCR 초기화 완료")
+        # 언어 설정 (환경변수에서 기본값 읽기)
+        self.source_language = source_language or os.getenv('SOURCE_LANGUAGE', 'ja')
+        self.target_language = target_language or os.getenv('TARGET_LANGUAGE', 'Korean')
+        
+        # OCR 언어 설정
+        ocr_lang_str = ocr_languages or os.getenv('OCR_LANGUAGES', 'ja,en')
+        ocr_lang_list = [lang.strip() for lang in ocr_lang_str.split(',')]
+        
+        # OCR 초기화
+        self.ocr_reader = easyocr.Reader(ocr_lang_list)
+        print(f"✅ EasyOCR 초기화 완료: {ocr_lang_list}")
         
         # OpenAI 설정
         if openai_api_key:
@@ -23,6 +31,8 @@ class ScreenTextTranslator:
             print("✅ OpenAI API 연결 완료")
         else:
             print("⚠️  OpenAI API 키가 없어 번역 기능이 제한됩니다.")
+        
+        print(f"🌐 언어 설정: {self.source_language} → {self.target_language}")
     
     def extract_frames_with_text_change(self, video_path, interval_seconds=5):
         """비디오에서 일정 간격으로 프레임을 추출"""

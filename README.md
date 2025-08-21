@@ -45,8 +45,164 @@ pip install -r requirements.txt
 # .env.example을 복사해서 .env 파일 생성
 cp .env.example .env
 
-# .env 파일을 열어서 OpenAI API 키 설정
-# OPENAI_API_KEY=your_actual_api_key_here
+# .env 파일을 열어서 설정값들을 수정
+```
+
+**.env 파일 설정 예시:**
+```bash
+# OpenAI API 키
+OPENAI_API_KEY=your_actual_api_key_here
+
+# 소스 언어 (비디오의 원본 언어)
+SOURCE_LANGUAGE=ja
+
+# 타겟 언어 (번역할 언어)  
+TARGET_LANGUAGE=Korean
+
+# OCR 언어 설정 (쉼표로 구분)
+OCR_LANGUAGES=ja,en
+
+# 파일 경로 설정
+INPUT_VIDEO_PATH=./input_video.mp4
+OUTPUT_DIR=./output
+TEMP_DIR=./temp
+DEFAULT_OUTPUT_FORMAT=mp4
+SUPPORTED_INPUT_FORMATS=mp4,mov,avi,mkv,wmv,flv,webm,m4v
+OUTPUT_FILENAME_PATTERN={stem}_{task}.{ext}
+```
+
+## 🌐 지원 언어
+
+### 소스 언어 (SOURCE_LANGUAGE)
+Whisper가 지원하는 언어 코드를 사용합니다:
+- `ja`: 일본어
+- `en`: 영어
+- `ko`: 한국어
+- `zh`: 중국어
+- `fr`: 프랑스어
+- `de`: 독일어
+- `es`: 스페인어
+- `ru`: 러시아어
+- `pt`: 포르투갈어
+- `it`: 이탈리아어
+
+### 타겟 언어 (TARGET_LANGUAGE)
+GPT가 이해할 수 있는 언어명을 사용합니다:
+- `Korean`: 한국어
+- `English`: 영어
+- `Japanese`: 일본어
+- `Chinese`: 중국어
+- `French`: 프랑스어
+- `German`: 독일어
+- `Spanish`: 스페인어
+- `Russian`: 러시아어
+- `Portuguese`: 포르투갈어
+- `Italian`: 이탈리아어
+
+### OCR 언어 (OCR_LANGUAGES)
+EasyOCR이 지원하는 언어 코드를 쉼표로 구분:
+- `en`: 영어
+- `ja`: 일본어
+- `ko`: 한국어
+- `zh`: 중국어 (간체/번체)
+- `fr`: 프랑스어
+- `de`: 독일어
+- `es`: 스페인어
+- `ru`: 러시아어
+- `pt`: 포르투갈어
+- `it`: 이탈리아어
+
+**예시:**
+```bash
+# 일본어 비디오를 한국어로 번역
+SOURCE_LANGUAGE=ja
+TARGET_LANGUAGE=Korean
+OCR_LANGUAGES=ja,en
+
+# 영어 비디오를 일본어로 번역
+SOURCE_LANGUAGE=en
+TARGET_LANGUAGE=Japanese
+OCR_LANGUAGES=en
+
+# 중국어 비디오를 영어로 번역
+SOURCE_LANGUAGE=zh
+TARGET_LANGUAGE=English
+OCR_LANGUAGES=zh,en
+```
+
+## 📁 파일 경로 설정
+
+### 환경변수 설정
+
+**.env 파일의 파일 경로 관련 설정:**
+
+```bash
+# 기본 입력 비디오 파일 경로
+INPUT_VIDEO_PATH=./input_video.mp4
+
+# 출력 디렉토리 (결과 파일들이 저장될 위치)
+OUTPUT_DIR=./output
+
+# 임시 파일 디렉토리
+TEMP_DIR=./temp
+
+# 기본 출력 비디오 확장자
+DEFAULT_OUTPUT_FORMAT=mp4
+
+# 지원하는 입력 비디오 확장자 (쉼표로 구분)
+SUPPORTED_INPUT_FORMATS=mp4,mov,avi,mkv,wmv,flv,webm,m4v
+
+# 출력 파일명 패턴
+OUTPUT_FILENAME_PATTERN={stem}_{task}.{ext}
+```
+
+### 파일명 패턴 변수
+
+`OUTPUT_FILENAME_PATTERN`에서 사용할 수 있는 변수들:
+
+- `{stem}`: 원본 파일명 (확장자 제외)
+- `{task}`: 작업명 (subtitles, screen_translation 등)  
+- `{ext}`: 출력 파일 확장자
+- `{timestamp}`: 타임스탬프 (YYYYMMDD_HHMMSS)
+
+**예시:**
+```bash
+# 기본 패턴
+OUTPUT_FILENAME_PATTERN={stem}_{task}.{ext}
+# 결과: video_subtitles.mp4
+
+# 타임스탬프 포함 패턴
+OUTPUT_FILENAME_PATTERN={stem}_{task}_{timestamp}.{ext}
+# 결과: video_subtitles_20241201_143022.mp4
+```
+
+### 명령행 사용법
+
+환경변수 대신 명령행에서 직접 비디오 파일을 지정할 수 있습니다:
+
+```bash
+# 특정 비디오 파일로 자막 생성
+python improved_subtitle_generator.py /path/to/your/video.mp4
+
+# 특정 비디오 파일로 화면 번역
+python improved_screen_translator.py /path/to/your/video.mp4
+
+# 환경변수에 설정된 기본 파일 사용
+python improved_subtitle_generator.py
+```
+
+### 디렉토리 구조 예시
+
+```
+your-project/
+├── input_video.mp4          # 입력 비디오
+├── output/                  # 출력 디렉토리
+│   ├── video_subtitles.mp4
+│   ├── video_subtitles.srt
+│   └── video_screen_translation.mp4
+├── temp/                    # 임시 파일 디렉토리
+│   └── audio_segment_*.wav
+└── .env                     # 환경변수 설정
 ```
 
 ## 🚀 사용법
@@ -124,7 +280,7 @@ video-converter/
 1. [OpenAI 플랫폼](https://platform.openai.com/api-keys)에서 API 키를 생성합니다.
 2. `.env` 파일에 키를 설정합니다:
    ```
-   OPENAI_API_KEY=sk-proj-...
+   OPENAI_API_KEY=your_actual_api_key_here
    ```
 
 ### 비디오 파일 준비
@@ -153,7 +309,16 @@ result = generator.generate_subtitles("video.mp4")
 ```python
 from improved_subtitle_generator import ImprovedSubtitleGenerator
 
+# 환경변수 사용 (권장)
 generator = ImprovedSubtitleGenerator(api_key="your-openai-api-key")
+
+# 또는 직접 언어 지정
+generator = ImprovedSubtitleGenerator(
+    api_key="your-openai-api-key",
+    source_language="en",  # 영어 음성
+    target_language="Korean"  # 한국어로 번역
+)
+
 result = generator.process_video_segment("video.mp4", start_time=0, end_time=60)
 ```
 
@@ -164,7 +329,17 @@ result = generator.process_video_segment("video.mp4", start_time=0, end_time=60)
 ```python
 from screen_text_translator import ScreenTextTranslator
 
+# 환경변수 사용 (권장)
 translator = ScreenTextTranslator(api_key="your-openai-api-key")
+
+# 또는 직접 언어 지정
+translator = ScreenTextTranslator(
+    api_key="your-openai-api-key",
+    source_language="zh",  # 중국어 텍스트 감지
+    target_language="English",  # 영어로 번역
+    ocr_languages="zh,en"  # 중국어와 영어 OCR
+)
+
 result = translator.process_video_with_translation("input.mp4", "output.mp4")
 ```
 
@@ -175,7 +350,17 @@ result = translator.process_video_with_translation("input.mp4", "output.mp4")
 ```python
 from improved_screen_translator import ImprovedScreenTextTranslator
 
+# 환경변수 사용 (권장)
 translator = ImprovedScreenTextTranslator(api_key="your-openai-api-key")
+
+# 또는 직접 언어 지정  
+translator = ImprovedScreenTextTranslator(
+    api_key="your-openai-api-key",
+    source_language="fr",  # 프랑스어 텍스트 감지
+    target_language="Korean",  # 한국어로 번역
+    ocr_languages="fr,en"  # 프랑스어와 영어 OCR
+)
+
 result = translator.process_video_segment_improved("input.mp4", "output.mp4")
 ```
 
